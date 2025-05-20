@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ঈদ মোবারক!</title>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Arial', sans-serif; /* একটি সুন্দর বাংলা ফন্ট যোগ করা হলো */
+            background-color: #fdf5e6; /* হালকা ক্রিম/ওল্ড লেস রঙ */
+            color: #4A4A4A; /* গাঢ় ধূসর টেক্সট */
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fffaf0; /* ফ্লোরাল হোয়াইট, আরও উষ্ণ সাদা */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            max-width: 550px;
+            width: 90%;
+            border-top: 5px solid #006400; /* গাঢ় সবুজ টপ বর্ডার */
+        }
+        h1 {
+            color: #006400; /* গাঢ় সবুজ */
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        /* প্রেরকের নামসহ বার্তা প্রদর্শনের জন্য h2 */
+        #senderGreetingMessage {
+            color: #DAA520; /* গোল্ডেনরড/সোনালী */
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: normal;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 3px solid #DAA520; /* সোনালী বর্ডার */
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            background-color: #228B22; /* ফরেস্ট গ্রিন */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #006400; /* গাঢ় সবুজ হোভার */
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        #generatedLinkContainer {
+            margin-top: 25px;
+            word-wrap: break-word;
+            /* display: flex;  এটিকে JavaScript থেকে নিয়ন্ত্রণ করা হবে */
+            align-items: center;
+        }
+        #generatedLinkContainer p {
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        #generatedLink {
+            flex-grow: 1;
+            margin-right: 8px;
+            padding: 12px; /* ইনপুটের মতো প্যাডিং */
+            font-size: 0.95em;
+        }
+        #copyButton {
+            width: 90px;
+            padding: 12px 0;
+            font-size: 1em;
+        }
+        .recipient-info-text { /* প্রাপকের নাম জিজ্ঞাসা করার জন্য স্টাইল */
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .personalized-greeting-text { /* চূড়ান্ত শুভেচ্ছাবার্তার স্টাইল */
+            font-size: 1.3em;
+            color: #D2691E; /* চকোলেট/বাদামী রঙ */
+            font-weight: bold;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        /* ফন্ট লিঙ্ক (গুগল ফন্টস থেকে) */
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img id="eidAnimation" src="eid_mubarak.gif" alt="ঈদ মোবারক অ্যানিমেশন">
+        <h1>ঈদ মোবারক!</h1>
+        <h2 id="senderGreetingMessage" style="display:none;"></h2> <!-- প্রেরকের নামসহ বার্তা এখানে আসবে -->
+
+        <div id="nameInputSection">
+            <p class="recipient-info-text">আপনার নাম লিখুন (লিঙ্ক তৈরি করার জন্য):</p>
+            <input type="text" id="senderNameInput" placeholder="আপনার নাম">
+            <!-- বোতামের টেক্সট এবং ফাংশন পরিবর্তন করা হয়েছে -->
+            <button onclick="generateAndShareLink()">লিঙ্ক তৈরি ও শেয়ার করুন</button>
+            <div id="generatedLinkContainer" style="display:none;">
+                <p>এই লিঙ্কটি বন্ধুদের সাথে শেয়ার করুন অথবা কপি করুন:</p>
+                <div style="display: flex; width: 100%;"> <!-- ইনপুট এবং কপি বাটনকে এক লাইনে রাখতে -->
+                    <input type="text" id="generatedLink" readonly>
+                    <button id="copyButton" onclick="copyLink()">কপি</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="recipientNameSection" style="display:none;">
+            <p class="recipient-info-text">আপনার নাম কি?</p>
+            <input type="text" id="recipientNameInput" placeholder="আপনার নাম">
+            <button onclick="showPersonalizedGreeting()">শুভেচ্ছা গ্রহণ করুন</button>
+            <p id="personalizedGreeting" class="personalized-greeting-text"></p>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        window.onload = function() {
+            const senderNameFromUrl = getUrlParameter('sender');
+            const senderGreetingMessageEl = document.getElementById('senderGreetingMessage');
+            
+            if (senderNameFromUrl) {
+                senderGreetingMessageEl.innerHTML = `From <strong>${senderNameFromUrl}</strong>`;
+                senderGreetingMessageEl.style.display = 'block';
+                document.getElementById('nameInputSection').style.display = 'none';
+                document.getElementById('recipientNameSection').style.display = 'block';
+            } else {
+                document.getElementById('nameInputSection').style.display = 'block';
+                document.getElementById('recipientNameSection').style.display = 'none';
+                senderGreetingMessageEl.style.display = 'none';
+            }
+        };
+
+        async function generateAndShareLink() {
+            const senderName = document.getElementById('senderNameInput').value.trim();
+            if (senderName === "") {
+                alert("অনুগ্রহ করে আপনার নাম লিখুন।");
+                return;
+            }
+            const baseUrl = window.location.href.split('?')[0];
+            const shareableLink = `${baseUrl}?sender=${encodeURIComponent(senderName)}`;
+
+            document.getElementById('generatedLink').value = shareableLink;
+            const linkContainer = document.getElementById('generatedLinkContainer');
+            // লিঙ্ক দেখানোর কন্টেইনারকে flex হিসেবে সেট করা হলো
+            linkContainer.style.display = 'block'; // প্রথমে block করুন, ভেতরের div flex হবে
+            linkContainer.querySelector('p').style.display = 'block';
+
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `ঈদ মোবারক! ${senderName}-এর পক্ষ থেকে`,
+                        text: `আসসালামু আলাইকুম, ${senderName} আপনাকে ঈদের শুভেচ্ছা পাঠিয়েছেন! এই লিঙ্কে ক্লিক করে শুভেচ্ছা গ্রহণ করুন:`,
+                        url: shareableLink,
+                    });
+                    // console.log('লিঙ্ক সফলভাবে শেয়ার করা হয়েছে বা শেয়ার ডায়ালগ দেখানো হয়েছে।');
+                    // শেয়ার সফল হলে ব্যবহারকারীকে অতিরিক্ত কোনো বার্তা দেখানোর প্রয়োজন নেই,
+                    // কারণ শেয়ার ডায়ালগ নিজেই একটি ইন্টারঅ্যাকশন।
+                } catch (err) {
+                    console.error('শেয়ার করতে সমস্যা হয়েছে:', err);
+                    // যদি ব্যবহারকারী শেয়ার ডায়ালগ বাতিল করে, তাহলেও লিঙ্কটি কপি করার জন্য দৃশ্যমান থাকবে।
+                    // কোনো বিশেষ বার্তা না দেখালেও চলবে, কারণ লিঙ্ক কপি করার অপশন থাকছেই।
+                    // তবে যদি চান, একটি বার্তা দিতে পারেন:
+                    // alert('শেয়ারিং বাতিল করা হয়েছে অথবা কোনো সমস্যা হয়েছে। প্রয়োজনে লিঙ্কটি কপি করে নিন।');
+                }
+            } else {
+                // navigator.share সমর্থিত না হলে, ব্যবহারকারীকে লিঙ্ক কপি করতে বলুন
+                alert('আপনার ব্রাউজার সরাসরি শেয়ারিং সমর্থন করে না। অনুগ্রহ করে নিচের লিঙ্কটি কপি করে শেয়ার করুন।');
+            }
+        }
+
+        async function copyLink() {
+            const linkInput = document.getElementById('generatedLink');
+            const textToCopy = linkInput.value;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                try {
+                    await navigator.clipboard.writeText(textToCopy);
+                    alert('লিঙ্ক কপি করা হয়েছে!');
+                } catch (err) {
+                    console.error('Async copy failed: ', err);
+                    copyLinkExecCommand(linkInput); // ফলব্যাক
+                }
+            } else {
+                copyLinkExecCommand(linkInput); // পুরোনো ব্রাউজারের জন্য ফলব্যাক
+            }
+        }
+
+        function copyLinkExecCommand(linkInput) {
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('লিঙ্ক কপি করা হয়েছে!');
+                } else {
+                    alert('দুঃখিত, লিঙ্কটি কপি করা যায়নি। নিজে কপি করে নিন।');
+                }
+            } catch (err) {
+                alert('দুঃখিত, লিঙ্কটি কপি করা যায়নি। নিজে কপি করে নিন।');
+            }
+            // ফোকাস সরিয়ে নেওয়া ভালো, যাতে সিলেক্টেড টেক্সট আর হাইলাইটেড না থাকে
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            } else if (document.selection) {
+                document.selection.empty();
+            }
+        }
+
+        function showPersonalizedGreeting() {
+            const recipientName = document.getElementById('recipientNameInput').value.trim();
+            const senderName = getUrlParameter('sender');
+
+            if (recipientName === "") {
+                alert("অনুগ্রহ করে আপনার নাম লিখুন।");
+                return;
+            }
+
+            document.getElementById('personalizedGreeting').innerHTML = `প্রিয় <strong>${recipientName}</strong>,<br>আপনাকে <strong>${senderName}</strong>-এর পক্ষ থেকে ঈদের আন্তরিক শুভেচ্ছা ও ভালোবাসা!`;
+            
+            document.getElementById('recipientNameInput').style.display = 'none';
+            document.querySelector('#recipientNameSection button').style.display = 'none';
+            document.querySelector('#recipientNameSection p:first-of-type').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
