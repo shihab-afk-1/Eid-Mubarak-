@@ -65,6 +65,7 @@
             cursor: pointer;
             font-size: 1.1em;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 5px; /* বাটনগুলোর মধ্যে সামান্য ফাঁক */
         }
         button:hover {
             background-color: #006400; /* গাঢ় সবুজ হোভার */
@@ -76,7 +77,6 @@
         #generatedLinkContainer {
             margin-top: 25px;
             word-wrap: break-word;
-            /* display: flex;  এটিকে JavaScript থেকে নিয়ন্ত্রণ করা হবে */
             align-items: center;
         }
         #generatedLinkContainer p {
@@ -88,7 +88,7 @@
         #generatedLink {
             flex-grow: 1;
             margin-right: 8px;
-            padding: 12px; /* ইনপুটের মতো প্যাডিং */
+            padding: 12px;
             font-size: 0.95em;
         }
         #copyButton {
@@ -96,17 +96,23 @@
             padding: 12px 0;
             font-size: 1em;
         }
-        .recipient-info-text { /* প্রাপকের নাম জিজ্ঞাসা করার জন্য স্টাইল */
+        .recipient-info-text {
             font-size: 1.1em;
             color: #333;
             margin-bottom: 10px;
         }
-        .personalized-greeting-text { /* চূড়ান্ত শুভেচ্ছাবার্তার স্টাইল */
+        .personalized-greeting-text {
             font-size: 1.3em;
             color: #D2691E; /* চকোলেট/বাদামী রঙ */
             font-weight: bold;
             margin-top: 20px;
             line-height: 1.6;
+        }
+        #createNewLinkButton { /* নতুন বাটনের জন্য স্টাইল, যদি প্রয়োজন হয় */
+            background-color: #556B2F; /* ডার্ক অলিভ গ্রিন */
+        }
+        #createNewLinkButton:hover {
+            background-color: #3A4D21;
         }
         /* ফন্ট লিঙ্ক (গুগল ফন্টস থেকে) */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
@@ -115,17 +121,16 @@
 <body>
     <div class="container">
         <img id="eidAnimation" src="eid_mubarak.gif" alt="ঈদ মোবারক অ্যানিমেশন">
-        <h1>ঈদ মোবারক!</h1>
-        <h2 id="senderGreetingMessage" style="display:none;"></h2> <!-- প্রেরকের নামসহ বার্তা এখানে আসবে -->
+        <h1>🌙 ঈদ মোবারক✨</h1>
+        <h2 id="senderGreetingMessage" style="display:none;"></h2>
 
         <div id="nameInputSection">
             <p class="recipient-info-text">আপনার নাম লিখুন (লিঙ্ক তৈরি করার জন্য):</p>
             <input type="text" id="senderNameInput" placeholder="আপনার নাম">
-            <!-- বোতামের টেক্সট এবং ফাংশন পরিবর্তন করা হয়েছে -->
-            <button onclick="generateAndShareLink()">লিঙ্ক তৈরি ও শেয়ার করুন</button>
+            <button id="generateShareButton" onclick="generateAndShareLink()">লিঙ্ক তৈরি ও শেয়ার করুন</button>
             <div id="generatedLinkContainer" style="display:none;">
                 <p>এই লিঙ্কটি বন্ধুদের সাথে শেয়ার করুন অথবা কপি করুন:</p>
-                <div style="display: flex; width: 100%;"> <!-- ইনপুট এবং কপি বাটনকে এক লাইনে রাখতে -->
+                <div style="display: flex; width: 100%;">
                     <input type="text" id="generatedLink" readonly>
                     <button id="copyButton" onclick="copyLink()">কপি</button>
                 </div>
@@ -133,10 +138,12 @@
         </div>
 
         <div id="recipientNameSection" style="display:none;">
-            <p class="recipient-info-text">আপনার নাম কি?</p>
+            <p class="recipient-info-text" id="recipientPromptText">আপনার নাম কি?</p>
             <input type="text" id="recipientNameInput" placeholder="আপনার নাম">
-            <button onclick="showPersonalizedGreeting()">শুভেচ্ছা গ্রহণ করুন</button>
+            <button id="showGreetingButton" onclick="showPersonalizedGreeting()">শুভেচ্ছা গ্রহণ করুন</button>
             <p id="personalizedGreeting" class="personalized-greeting-text"></p>
+            <!-- নতুন বাটন -->
+            <button id="createNewLinkButton" onclick="resetToSenderInterface()" style="display:none; margin-top: 20px;">নতুন শুভেচ্ছা লিঙ্ক তৈরি করুন</button>
         </div>
     </div>
 
@@ -157,10 +164,26 @@
                 senderGreetingMessageEl.style.display = 'block';
                 document.getElementById('nameInputSection').style.display = 'none';
                 document.getElementById('recipientNameSection').style.display = 'block';
+
+                // রিসিপিয়েন্ট সেকশনের অপ্রয়োজনীয় অংশ হাইড করে রাখি
+                document.getElementById('recipientNameInput').style.display = 'block';
+                document.getElementById('showGreetingButton').style.display = 'inline-block'; // বা block
+                document.getElementById('recipientPromptText').style.display = 'block';
+                document.getElementById('personalizedGreeting').innerHTML = '';
+                document.getElementById('personalizedGreeting').style.display = 'none';
+                document.getElementById('createNewLinkButton').style.display = 'none';
+
             } else {
                 document.getElementById('nameInputSection').style.display = 'block';
                 document.getElementById('recipientNameSection').style.display = 'none';
                 senderGreetingMessageEl.style.display = 'none';
+
+                // সেন্ডার সেকশনের ইনপুট ও বাটন নিশ্চিত করা
+                document.getElementById('senderNameInput').value = '';
+                document.getElementById('generateShareButton').disabled = false;
+                document.getElementById('generatedLinkContainer').style.display = 'none';
+                document.getElementById('generatedLink').value = '';
+
             }
         };
 
@@ -175,9 +198,11 @@
 
             document.getElementById('generatedLink').value = shareableLink;
             const linkContainer = document.getElementById('generatedLinkContainer');
-            // লিঙ্ক দেখানোর কন্টেইনারকে flex হিসেবে সেট করা হলো
-            linkContainer.style.display = 'block'; // প্রথমে block করুন, ভেতরের div flex হবে
+            linkContainer.style.display = 'block';
             linkContainer.querySelector('p').style.display = 'block';
+
+            // লিঙ্ক তৈরির বাটনটি ডিজেবল করা যেতে পারে, তবে নতুন লিঙ্ক তৈরির অপশন থাকায় এটি আপাতত সক্রিয় রাখা হলো
+            // document.getElementById('generateShareButton').disabled = true;
 
 
             if (navigator.share) {
@@ -187,18 +212,10 @@
                         text: `আসসালামু আলাইকুম, ${senderName} আপনাকে ঈদের শুভেচ্ছা পাঠিয়েছেন! এই লিঙ্কে ক্লিক করে শুভেচ্ছা গ্রহণ করুন:`,
                         url: shareableLink,
                     });
-                    // console.log('লিঙ্ক সফলভাবে শেয়ার করা হয়েছে বা শেয়ার ডায়ালগ দেখানো হয়েছে।');
-                    // শেয়ার সফল হলে ব্যবহারকারীকে অতিরিক্ত কোনো বার্তা দেখানোর প্রয়োজন নেই,
-                    // কারণ শেয়ার ডায়ালগ নিজেই একটি ইন্টারঅ্যাকশন।
                 } catch (err) {
                     console.error('শেয়ার করতে সমস্যা হয়েছে:', err);
-                    // যদি ব্যবহারকারী শেয়ার ডায়ালগ বাতিল করে, তাহলেও লিঙ্কটি কপি করার জন্য দৃশ্যমান থাকবে।
-                    // কোনো বিশেষ বার্তা না দেখালেও চলবে, কারণ লিঙ্ক কপি করার অপশন থাকছেই।
-                    // তবে যদি চান, একটি বার্তা দিতে পারেন:
-                    // alert('শেয়ারিং বাতিল করা হয়েছে অথবা কোনো সমস্যা হয়েছে। প্রয়োজনে লিঙ্কটি কপি করে নিন।');
                 }
             } else {
-                // navigator.share সমর্থিত না হলে, ব্যবহারকারীকে লিঙ্ক কপি করতে বলুন
                 alert('আপনার ব্রাউজার সরাসরি শেয়ারিং সমর্থন করে না। অনুগ্রহ করে নিচের লিঙ্কটি কপি করে শেয়ার করুন।');
             }
         }
@@ -206,34 +223,38 @@
         async function copyLink() {
             const linkInput = document.getElementById('generatedLink');
             const textToCopy = linkInput.value;
+            const copyButton = document.getElementById('copyButton');
+            const originalButtonText = copyButton.textContent;
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 try {
                     await navigator.clipboard.writeText(textToCopy);
-                    alert('লিঙ্ক কপি করা হয়েছে!');
+                    copyButton.textContent = 'কপি হয়েছে!';
                 } catch (err) {
                     console.error('Async copy failed: ', err);
-                    copyLinkExecCommand(linkInput); // ফলব্যাক
+                    copyLinkExecCommand(linkInput, copyButton); // ফলব্যাক
                 }
             } else {
-                copyLinkExecCommand(linkInput); // পুরোনো ব্রাউজারের জন্য ফলব্যাক
+                copyLinkExecCommand(linkInput, copyButton); // পুরোনো ব্রাউজারের জন্য ফলব্যাক
             }
+            setTimeout(() => {
+                copyButton.textContent = originalButtonText;
+            }, 2000);
         }
 
-        function copyLinkExecCommand(linkInput) {
+        function copyLinkExecCommand(linkInput, copyButton) {
             linkInput.select();
             linkInput.setSelectionRange(0, 99999);
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    alert('লিঙ্ক কপি করা হয়েছে!');
+                    copyButton.textContent = 'কপি হয়েছে!';
                 } else {
                     alert('দুঃখিত, লিঙ্কটি কপি করা যায়নি। নিজে কপি করে নিন।');
                 }
             } catch (err) {
                 alert('দুঃখিত, লিঙ্কটি কপি করা যায়নি। নিজে কপি করে নিন।');
             }
-            // ফোকাস সরিয়ে নেওয়া ভালো, যাতে সিলেক্টেড টেক্সট আর হাইলাইটেড না থাকে
             if (window.getSelection) {
                 window.getSelection().removeAllRanges();
             } else if (document.selection) {
@@ -250,11 +271,23 @@
                 return;
             }
 
-            document.getElementById('personalizedGreeting').innerHTML = `প্রিয় <strong>${recipientName}</strong>,<br>আপনাকে <strong>${senderName}</strong>-এর পক্ষ থেকে ঈদের আন্তরিক শুভেচ্ছা ও ভালোবাসা!`;
+            const personalizedGreetingEl = document.getElementById('personalizedGreeting');
+            personalizedGreetingEl.innerHTML = `প্রিয় <strong>${recipientName}</strong>,<br>আপনাকে <strong>${senderName}</strong>-এর পক্ষ থেকে ঈদের আন্তরিক শুভেচ্ছা ও ভালোবাসা!`;
+            personalizedGreetingEl.style.display = 'block';
             
             document.getElementById('recipientNameInput').style.display = 'none';
-            document.querySelector('#recipientNameSection button').style.display = 'none';
-            document.querySelector('#recipientNameSection p:first-of-type').style.display = 'none';
+            document.getElementById('showGreetingButton').style.display = 'none';
+            document.getElementById('recipientPromptText').style.display = 'none';
+            
+            // নতুন শুভেচ্ছা লিঙ্ক তৈরির বাটন দেখান
+            document.getElementById('createNewLinkButton').style.display = 'inline-block'; // অথবা 'block'
+        }
+
+        function resetToSenderInterface() {
+            // ইউআরএল থেকে 'sender' প্যারামিটার মুছে দিয়ে পেইজটি রিলোড করুন
+            // এটি নিশ্চিত করবে যে window.onload ফাংশন সঠিকভাবে প্রাথমিক ইন্টারফেস লোড করবে।
+            const baseUrl = window.location.href.split('?')[0];
+            window.location.href = baseUrl;
         }
     </script>
 </body>
